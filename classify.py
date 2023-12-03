@@ -144,16 +144,16 @@ def load_and_prep_image(filename, img_shape=224):
 result = ""
 model = Meso4()
 model.load(".\model\Meso4_DF.h5")
-img = load_and_prep_image(filename=r".\data\hard_1_1111.jpg", img_shape=256)
-predict = model.predict(tf.expand_dims(img, axis=0).numpy())
+# img = load_and_prep_image(filename=r".\data\hard_1_1111.jpg", img_shape=256)
+# predict = model.predict(tf.expand_dims(img, axis=0).numpy())
 
-if predict > 0.5:
-    result = "real"
-else:
-    result = "fake"
+# if predict > 0.5:
+#     result = "real"
+# else:
+#     result = "fake"
     
-print(f"=====Hasil klasifikasi====")
-print(np.squeeze(predict))
-print("hasil : ", result)
+# print(f"=====Hasil klasifikasi====")
+# print(np.squeeze(predict))
+# print("hasil : ", result)
 
 
