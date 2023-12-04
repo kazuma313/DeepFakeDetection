@@ -1,63 +1,50 @@
-# importing libraries 
 import cv2 
 import numpy as np 
-import tensorflow as tf
 import classify as clf
-import ffmpeg
-# Create a VideoCapture object and read from input file 
+from threading import Thread
+from queue import Queue
 
-def clf_vidio(filepath):
+def clf_vidio(filepath, name_vidio='vidio'):
     # Tambahin Exception  
     cap = cv2.VideoCapture(filepath) 
     jumlah_frame = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     clf_result_count = 0
     result = ""
+    count_frame = 0
+    Q = Queue()
     
-    # Check if camera opened successfully 
     if (cap.isOpened()== False): 
         print("Error opening video file") 
         
     # Read until video is completed 
     while(cap.isOpened()): 
-    # Capture frame-by-frame 
         ret, frame = cap.read() 
         if ret == True: 
-            _, column, _ = frame.shape
-            column = int(column/2)
-            # Ubah ukuran frame
-            # frame = frame[:, :column, :]
+            # row, column, _ =  frame.shape
             resized_frame = cv2.resize(frame, (256, 256))/255.
+            
             predict = clf.model.predict(np.expand_dims(resized_frame, axis=0))
+            cv2.imshow(name_vidio, resized_frame)
             print(predict)
-            if predict > 0.5:
+            if predict > 0.90:
                 clf_result_count += 1
-                print(clf_result_count)
             else:
                 pass
             
-            # Tampilkan frame yang telah diubah ukurannya
-            
-            cv2.imshow('Video', resized_frame)
-            
-        # Press Q on keyboard to exit 
             if cv2.waitKey(25) & 0xFF == ord('q'): 
                 break
-    
-    # Break the loop 
         else: 
             break
-    
-    # When everything done, release 
-    # the video capture object 
+        
+        count_frame += 1
+        
     cap.release() 
-    
-    # Closes all the frames 
     cv2.destroyAllWindows() 
     
     try:
         final_clf_result = clf_result_count/jumlah_frame
-        print(final_clf_result)
-        if final_clf_result > 85:
+        print("Final Result :",final_clf_result)
+        if final_clf_result > 0.80:
             result = "Real"
         else:
             result = "Fake"
@@ -72,11 +59,38 @@ def clf_vidio(filepath):
 
     # print("result :", result)
     
-    return result
+    return result, final_clf_result
 
 def main():
-    result = clf_vidio(filepath="F:\python\MyProject\deepFake\data\tomCrush.mp4")
-    print(result)
+    list_deepfake_vidio = [
+                        # "deepfake0.mp4", 
+                        # "deepfake1.mp4", 
+                        # "deepfake2.mp4", 
+                        # "deepfake3.mp4", 
+                        # "deepfake4.mp4",
+                        # "deepfake5.mp4",
+                        # "deepfake6.mp4",
+                        # "deepfake7.mp4",
+                        "deepfake0_360.mp4",
+                        ]
+    
+    
+    # list_deepfake_vidio = ["original0.MOV", 
+    #                        "original1.MOV", 
+    #                        "original2.MOV", 
+    #                        "deepfake3.MP4"]
+    list_result = []
+    list_final_clf_result = []
+    for name_file in list_deepfake_vidio:
+        result, final_clf_result = clf_vidio(filepath=f"F:\python\MyProject\deepFake\data\{name_file}", name_vidio=name_file)
+        list_result.append(result)
+        list_final_clf_result.append(final_clf_result)
+    print(list_result)
+    print(list_final_clf_result)
+    
+    # name_file = "deepfake1.mp4"
+    # result = clf_vidio(filepath=f"F:\python\MyProject\deepFake\data\{name_file}")
+    # print(result)
     
 if __name__ == "__main__":
     main()

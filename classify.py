@@ -27,6 +27,9 @@ class Classifier:
     def load(self, path):
         self.model.load_weights(path)
 
+    def load_model(self, path):
+        self.model.load_model(path)
+        
     def summary(self):
       return self.model.summary()
 
@@ -66,7 +69,6 @@ class Meso4(Classifier):
         return Model(inputs = x, outputs = y)
     
     
-
 class MesoInception4(Classifier):
     image_dimension = (256, 256, 3)
     def __init__(self, learning_rate = 0.001):
@@ -142,8 +144,16 @@ def load_and_prep_image(filename, img_shape=224):
 
 
 result = ""
+
+# bagusan model ini
+# model = Meso4()
+# model.load(".\model\Meso4_DF.h5")
+
 model = Meso4()
-model.load(".\model\Meso4_DF.h5")
+model.load(".\model\model1_18epochs_valacc0.9252.hdf5")
+
+# model = MesoInception4()
+# model.load(".\model\MesoInception_DF.h5")
 # img = load_and_prep_image(filename=r".\data\hard_1_1111.jpg", img_shape=256)
 # predict = model.predict(tf.expand_dims(img, axis=0).numpy())
 
