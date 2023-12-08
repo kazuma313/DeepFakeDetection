@@ -43,13 +43,13 @@ def clf_vidio(filepath, name_vidio='vidio'):
                         img_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                         img_rgb = img_rgb[y:(h+y) , x:(w+x)]
                         resized_frame = cv2.resize(img_rgb, (256, 256)) 
-                        resized_frame = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)/255. 
-                        predict = clf.model.predict(np.expand_dims(resized_frame, axis=0))
+                        normalized_img = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)/255. 
+                        predict = clf.model.predict(np.expand_dims(normalized_img, axis=0))
                         cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 4)
                         cv2.putText(frame, "Scanning...",
                                     (x, y*2), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                         print(predict)
-                        if predict > 0.90:
+                        if predict > 0.70:
                             clf_result_count += 1
                         else:
                             pass
@@ -57,7 +57,7 @@ def clf_vidio(filepath, name_vidio='vidio'):
                     pass
                 else:
                     pass  
-                cv2.imshow(name_vidio, frame)
+                cv2.imshow(name_vidio, cv2.resize(frame, (256, 256)))
                 if cv2.waitKey(25) & 0xFF == ord('q'): 
                     break
             else: 
@@ -67,7 +67,7 @@ def clf_vidio(filepath, name_vidio='vidio'):
         try:
             final_clf_result = clf_result_count/detected_face
             print("Final Result :",final_clf_result)
-            if final_clf_result > 0.80:
+            if final_clf_result > 0.70:
                 result = "Real"
             else:
                 result = "Fake"
